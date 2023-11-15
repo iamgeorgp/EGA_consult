@@ -59,21 +59,9 @@ def generator_main_dfs(num_cities: int,
     df_sampled = df_company.sample(n=num_companies) #.rename(columns={'CompanyName': 'Company'})   # Choice cities with current amount
     df_n_rows = df_sampled.shape[0]
 
-    fake = Faker()
-    columns = ['Address', 'City']
-    address_city = []
-    # Generating adress and city of company
-    for _ in range(df_n_rows):
-        address = fake.street_address()
-        city = random.choice(available_cities)
-        company_data = {
-            columns[0]: address,
-            columns[1]: city
-        }
-        address_city.append(company_data)
+
 
     # Creating result DataFrame of companies
-    df_adress_city = pd.DataFrame(address_city, columns=columns)
     df_company = df_sampled  # pd.concat([df_sampled['CompanyName'], df_adress_city)], axis=1).rename(columns={'CompanyName': 'Company'}).reset_index()
     df_company['CompanyID'] = range(1, len(df_company) + 1)
     df_company=df_company.drop(columns=["IncorporationDate","SIC"], axis=1)
@@ -131,9 +119,22 @@ def generator_main_dfs(num_cities: int,
     clients_phone_numbers = phone_numbers[:num_clients]
     managers_phone_numbers = phone_numbers[num_clients:num_people]
 
+
+    fake = Faker()
+    columns = ['Address', 'City']
+    address_client = []
+    city_client = []
+    # Generating adress and city of company
+    for _ in range(num_clients):
+        address = fake.street_address()
+        city = random.choice(available_cities)
+        city_client.append(city)
+        address_client.append(address)
     # --- Filling in the 2nd part of clients DataFrame ---
     df_clients['ClientID'] = range(1, num_clients + 1)
     df_clients['ClientName'] = clients_full_names
+    df_clients['City'] = city_client
+    df_clients['Address'] = address_client
     df_clients['ClientPhone'] = clients_phone_numbers
     df_clients=df_clients.reset_index(drop=True)
     # Saving companies DF to .csv file in generated_data folder
@@ -162,7 +163,7 @@ def generator_main_dfs(num_cities: int,
     num_df_type_service = len(df_type_service)
     num_df_service = len(df_service)
     # --- Generating contracts DataFrame
-    df_contracts = df_clients
+    df_contracts = df_clients.drop(['City', 'Address'], axis=1)
     df_random = df_contracts.sample(frac=1).reset_index(drop=True) # Mix the rows
     # Repetition of client line for several contarts from one client
     indices = []
@@ -380,6 +381,8 @@ def create_database(df_company, df_clients, df_type_service, df_service, df_mana
 		Column('CompanyID', Integer, ForeignKey('Company.CompanyID')),
 		Column('CompanyName', String),
 		Column('ClientName', String),
+        Column('City', String),
+        Column('Address', String),
 		Column('ClientPhone', String)
 	)
 	
