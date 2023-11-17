@@ -57,12 +57,6 @@ driver = webdriver.Edge(service=service, options=options)
 driver.get(url)
 time.sleep(4)
 
-# # Найти кнопку "Accept All" по классу
-# accept_button = WebDriverWait(driver, 10).until(
-#     EC.element_to_be_clickable((By.CLASS_NAME, 'cmpButtonLink.acceptLink'))
-# )
-# # Кликнуть на кнопку
-# accept_button.click()
 
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 surnames_array = []
