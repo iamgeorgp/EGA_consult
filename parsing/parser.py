@@ -1,5 +1,3 @@
-
-
 import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -11,9 +9,6 @@ from selenium.webdriver.edge.options import Options
 import time
 
 url = 'https://surnames.behindthename.com/names/usage/english/'
-
-
-
 
 # Path to current script directory
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -29,7 +24,7 @@ service = Service(driver_path)
 options = Options()
 
 # Add arguments for Options
-# options.add_argument('--page-load-strategy=interactive')  # Установка значения "interactive"
+# options.add_argument('--page-load-strategy=interactive')  
 # options.add_argument('--disable-gpu')
 options.add_argument('--disable-extensions')
 options.add_argument('--disable-dev-shm-usage')
@@ -46,7 +41,7 @@ options.add_argument('--disable-bundled-ppapi-flash')
 options.add_argument('--blink-settings=imagesEnabled=false')
 options.add_argument("--blink-settings=imagesEnabled=false")
 prefs = {
-    'profile.managed_default_content_settings.fonts': 1  # Отключение загрузки шрифтов
+    'profile.managed_default_content_settings.fonts': 1  
 }
 options.add_experimental_option('prefs', prefs)
 
@@ -57,16 +52,11 @@ driver = webdriver.Edge(service=service, options=options)
 driver.get(url)
 time.sleep(4)
 
-# # Найти кнопку "Accept All" по классу
-# accept_button = WebDriverWait(driver, 10).until(
-#     EC.element_to_be_clickable((By.CLASS_NAME, 'cmpButtonLink.acceptLink'))
-# )
-# # Кликнуть на кнопку
-# accept_button.click()
+
 
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 surnames_array = []
-# Ищем все блоки с классом 'browsename' и извлекаем имена
+# Search for all blocks with class 'browsename' and extract the names
 name_blocks = soup.find_all('div', class_='browsename')
 for name_block in name_blocks:
     name = name_block.find('span', class_='listname').text.strip()
@@ -77,10 +67,10 @@ for i in range(2, 7, 1):
     current_url = url+str(i)
     driver.get(current_url)
     time.sleep(4)
-    # Используем BeautifulSoup для парсинга HTML-кода текущей страницы
+    # Use BeautifulSoup to parse the HTML code of the current page
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-    # Ищем все блоки с классом 'browsename' и извлекаем имена
+    # Search for all blocks with class 'browsename' and extract the names
     name_blocks = soup.find_all('div', class_='browsename')
     for name_block in name_blocks:
         name = name_block.find('span', class_='listname').text.strip()
@@ -92,7 +82,7 @@ driver.get(url)
 time.sleep(4)
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 names_array = []
-# Ищем все блоки с классом 'browsename' и извлекаем имена
+# Search for all blocks with class 'browsename' and extract the names
 name_blocks = soup.find_all('div', class_='browsename')
 for name_block in name_blocks:
     name = name_block.find('span', class_='listname').text.strip()
@@ -103,10 +93,9 @@ for i in range(2, 16, 1):
     current_url = url+str(i)
     driver.get(current_url)
     time.sleep(4)
-    # Используем BeautifulSoup для парсинга HTML-кода текущей страницы
+    # Use BeautifulSoup to parse the HTML code of the current page
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-    # Ищем все блоки с классом 'browsename' и извлекаем имена
     name_blocks = soup.find_all('div', class_='browsename')
     for name_block in name_blocks:
         name = name_block.find('span', class_='listname').text.strip()
@@ -115,15 +104,15 @@ for i in range(2, 16, 1):
 driver.quit()
 
 file_name = "name.txt"
-# Открыть файл для записи
+# Open the file for writing
 with open(data_directory+"\\" +file_name, 'w', encoding='utf-8') as file:
-    # Записать каждый элемент массива построчно
+    # Write each element of the array line by line
     for item in names_array:
         file.write(f"{item}\n")
 
 file_name = "surname.txt"
-# Открыть файл для записи
+# Open the file for writing
 with open(data_directory+"\\" +file_name, 'w') as file:
-    # Записать каждый элемент массива построчно
+    # Write each element of the array line by line
     for item in surnames_array:
         file.write(f"{item}\n")
