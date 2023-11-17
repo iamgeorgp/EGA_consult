@@ -259,49 +259,60 @@ def generator_main_dfs(num_cities: int,
 
     return df_company, df_clients, df_type_service, df_service, df_managers, df_contracts
 
-def generator_scan_contracts(df_contracts, df_service):
+
+
+def generator_scan_contracts(df_contracts: pd.DataFrame, df_service: pd.DataFrame) -> None:
+    """
+    Generates contract scans based on transferred data from dataframes.
+
+    Arguments:
+    df_contracts (pd.DataFrame): A dataframe with information about contracts.
+    df_service (pd.DataFrame): DataFrame with information about the services provided.
+
+    Return Value:
+    None: The function returns no values, it generates contract scans based on the data passed in.
+    """
     # --- Main Paths ---
     script_directory = os.path.dirname(os.path.abspath(__file__)) # Script path
     data_directory = os.path.join(os.path.dirname(script_directory), "data")    # data folder path
     gen_data_directory = os.path.join(os.path.dirname(script_directory), "generated_data\scan_contract")  # generated_data folder path
     def create_contract(fields, index):
-        # Загрузка шаблона договора
-        contract_template = Image.open(f'{data_directory}\\default.jpg')  # Укажите путь к файлу шаблона
+        # Loading a contract template
+        contract_template = Image.open(f'{data_directory}\\default.jpg')  
 
         # Выбор шрифта и его размера
-        font = ImageFont.truetype('arial.ttf', size=10)  # Укажите путь к шрифту и размер шрифта
+        font = ImageFont.truetype('arial.ttf', size=10) 
 
-        # Создание объекта ImageDraw для редактирования изображения
+        # Create an ImageDraw object for image editing
         draw = ImageDraw.Draw(contract_template)
 
-        # Задание позиции и текста для каждого поля
+        # Set the position and text for each field
         text_positions = {
             'Signing date': (400, 100),
             'Contract ID': (270, 130),
             'Service': (20, 300),
-            'Company Name': (20, 320),
+            'Company name': (20, 320),
             'Client name': (320, 400),
             'Phone number': (320, 420),
             'Start date': (320, 440),
             'End date': (320, 460),
             'Pay date': (320, 480),
             'Price': (320, 500)
-            # Добавьте другие поля и их позиции здесь
         }
 
-        # Добавление текста заданных полей на изображение
+        # Add the text of specified fields to the image
         for field, position in text_positions.items():
             if field in fields:
                 draw.text(position, f"{field}: {fields[field]}", font=font, fill='black')
 
-        # Сохранение измененного изображения в файл с уникальным именем для каждой строки
-        # Добавлено сжатие с указанием параметра quality
-        contract_template.save(f'{gen_data_directory}\contract_{index}.jpg', quality=60)  # Используем уникальное имя с номером строки и уровень сжатия
+        # Saving the modified image to a file with a unique name for each line
+        # Compression with quality parameter added
+        contract_template.save(f'{gen_data_directory}\contract_{fields["Contract ID"]}.jpg', quality=80)  
 
     merged_df = pd.merge(df_contracts, df_service, on=['ServiceID', 'TypeServiceID'], how='inner')
-    # Предполагая, что у вас уже есть датафрейм merged_df
+    
     for index, row in merged_df.iterrows():
-        # Создаем словарь для каждой строки датафрейма, который передается в функцию create_contract
+        # Create a dictionary for each line of the dataframe, which is passed to the create_contract function
         contract_fields = {
             'Signing date': row['SigningDate'],
             'Contract ID': row['ContractID'],
@@ -313,58 +324,36 @@ def generator_scan_contracts(df_contracts, df_service):
             'End date': row['EndDate'],
             'Pay date': row['PayDate'],
             'Price': str(row['Price']) + '$'
-            # Добавьте другие поля с данными для договора
         }
         create_contract(contract_fields, index)
 
 
-# # Определение констант за пределами функции
-# SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-# DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "data")
-# GEN_DATA_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "generated_data\scan_contract")
-# TEMPLATE_PATH = 'default.jpg'  # Укажите путь к файлу шаблона
+def create_database(
+    df_company: pd.DataFrame, 
+    df_clients: pd.DataFrame, 
+    df_type_service: pd.DataFrame, 
+    df_service: pd.DataFrame, 
+    df_managers: pd.DataFrame, 
+    df_contracts: pd.DataFrame
+) -> None:
+    
+    """
+    Creates a SQLite database and populates it with information from the passed dataframes.
 
-# # Константы для текстовых позиций
-# TEXT_POSITIONS = {
-#     'Signing date': (400, 100),
-#     'Contract ID': (270, 130),
-#     'Service': (20, 300),
-#     'Company': (20, 320),
-#     'Client name': (320, 400),
-#     'Phone number': (320, 420),
-#     'Start date': (320, 440),
-#     'End date': (320, 460),
-#     'Pay date': (320, 480),
-#     'Price': (320, 500)
-#     # Добавьте другие поля и их позиции здесь
-# }
+    Arguments:
+    df_company (pd.DataFrame): A dataframe with information about companies.
+    df_clients (pd.DataFrame): DataFrame with information about customers.
+    df_type_service (pd.DataFrame): A dataframe with information about service types.
+    df_service (pd.DataFrame): DataFrame with information about the services provided.
+    df_managers (pd.DataFrame): DataFrame with information about the managers.
+    df_contracts (pd.DataFrame): A dataframe with information about contracts.
 
-# def create_contract(fields, index, contract_template):
-#     font = ImageFont.truetype('arial.ttf', size=10)  # Укажите путь к шрифту и размер шрифта
-#     draw = ImageDraw.Draw(contract_template)
-
-#     for field, position in TEXT_POSITIONS.items():
-#         if field in fields:
-#             draw.text(position, f"{field}: {fields[field]}", font=font, fill='black')
-
-#     contract_template.save(f'{GEN_DATA_DIR}\contract_{index}.jpg', quality=60)
-
-# def generator_scan_contracts(df_contracts, df_service):
-#     merged_df = pd.merge(df_contracts, df_service, on=['ServiceID', 'TypeServiceID'], how='inner')
-#     contract_template = Image.open(TEMPLATE_PATH)
-
-#     # Создание списка задач для параллельного выполнения
-#     tasks = [(row, idx, contract_template) for idx, row in merged_df.iterrows()]
-
-#     # Параллельное выполнение создания изображений
-#     with concurrent.futures.ThreadPoolExecutor() as executor:
-#         executor.map(lambda task: create_contract(*task), tasks)
-
-
-def create_database(df_company, df_clients, df_type_service, df_service, df_managers, df_contracts):
+    Return Value:
+    None: The function returns no values, only creates the database and populates it with data from the dataframes.
+    """
     absolute_path = os.path.abspath(os.path.join(os.getcwd(), '../databases/EGA_database.db'))
 
-    # Замена обратных косых черт на прямые косые черты для создания URL-адреса базы данных SQLite
+    # Replacing backslashes with forward slashes to create a SQLite database URL
     absolute_path = "sqlite:///" + absolute_path.replace("\\", "/")
 	# Connection to database
     
@@ -413,7 +402,7 @@ def create_database(df_company, df_clients, df_type_service, df_service, df_mana
 		Column('StartDate', Date),
 		Column('EndDate', Date),
 		Column('PayDate', Date),
-		Column('Price', String),
+		Column('Price', Integer),
 		Column('ManagerID', Integer, ForeignKey('Managers.ManagerID'))
 	)
 	# Create tables in DB
