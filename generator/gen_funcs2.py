@@ -368,7 +368,6 @@ def create_database(
     clients = Table('Clients', metadata,
 		Column('ClientID', Integer, primary_key=True),
 		Column('CompanyID', Integer, ForeignKey('Company.CompanyID')),
-		Column('CompanyName', String),
 		Column('ClientName', String),
         Column('City', String),
         Column('Address', String),
