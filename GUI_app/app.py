@@ -3,7 +3,7 @@
 
 import sys
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
 import csv
 import sqlite3
@@ -19,7 +19,7 @@ class LoginApp(QWidget):
         поля для ввода логина и пароля, кнопка входа, а также кнопка "Забыли пароль?".
         Привязывает функции к событиям нажатия кнопок для выполнения соответствующих действий.
         """
-
+        
         super().__init__()
         
         # Установка стилей для виджетов
@@ -74,14 +74,14 @@ class LoginApp(QWidget):
                 background-color: #f0f0f0; /* Цвет фона при наведении */
             }
         ''')
-
+        self.setWindowIcon(QIcon('data\EGA_logo.jpg'))
         # Настройка основного окна
         self.setWindowTitle('Login App')
         self.setFixedSize(380, 530)
 
         # Создание логотипа
         self.logo_label = QLabel()
-        pixmap = QPixmap('data/EGA_logo.jpg')
+        pixmap = QPixmap('D:\Repositories\EGA_consult\data\EGA_logo.jpg')
         pixmap_resized = pixmap.scaled(300, 300, aspectRatioMode=Qt.KeepAspectRatio)
         self.logo_label.setPixmap(pixmap_resized)
         self.logo_label.setAlignment(Qt.AlignCenter)
@@ -96,8 +96,8 @@ class LoginApp(QWidget):
         self.forget_password_button = QPushButton('Forgot password?', objectName='forgetPasswordButton')
 
         # Установка текста по умолчанию для поля ввода логина и пароля
-        self.login_input.setText('admin')
-        self.password_input.setText('admin')
+        # self.login_input.setText('admin')
+        # self.password_input.setText('admin')
 
         # Привязка функций к событиям нажатия кнопок
         self.login_button.clicked.connect(self.check_credentials)
@@ -263,7 +263,7 @@ class LoginApp(QWidget):
         self.second_combo.currentIndexChanged.connect(self.update_sql_script)
 
         # Подключение к базе данных
-        conn = sqlite3.connect('databases/EGA_database.db')
+        conn = sqlite3.connect('D:\Repositories\EGA_consult\databases\EGA_database.db')
         cursor = conn.cursor()
 
         # Выполнение запросов для заполнения значений выпадающего второго списка действительными данными
@@ -399,7 +399,7 @@ class LoginApp(QWidget):
 
         # Опредление изображения схемы
         image_label = QLabel()
-        pixmap = QPixmap('generated_data/shema22.jpg')
+        pixmap = QPixmap('D:\Repositories\EGA_consult\generated_data\shema22.jpg')
         image_label.setPixmap(pixmap)
         image_label.setAlignment(Qt.AlignCenter)
 
@@ -517,7 +517,7 @@ class LoginApp(QWidget):
         sql_script = self.sql_input.toPlainText()
         
         try:
-            conn = sqlite3.connect('databases/EGA_database.db')
+            conn = sqlite3.connect('D:\Repositories\EGA_consult\databases\EGA_database.db')
             cursor = conn.cursor()
             cursor.execute(sql_script)
             rows = cursor.fetchall()
