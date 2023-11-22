@@ -24,5 +24,5 @@ df_company, df_clients, df_type_service, df_service, df_managers, df_contracts =
                        max_work_duration,
                        max_day_delta_paying)
 gen_funcs2.create_database(df_company, df_clients, df_type_service, df_service, df_managers, df_contracts)
-gen_funcs2.generator_scan_contracts(df_contracts, df_service)
+# gen_funcs2.generator_scan_contracts(df_contracts, df_service)
 

@@ -260,7 +260,6 @@ def generator_main_dfs(num_cities: int,
     return df_company, df_clients, df_type_service, df_service, df_managers, df_contracts
 
 
-
 def generator_scan_contracts(df_contracts: pd.DataFrame, df_service: pd.DataFrame) -> None:
     """
     Generates contract scans based on transferred data from dataframes.
@@ -376,13 +375,13 @@ def create_database(
 	
     type_service = Table('TypeService', metadata,
 		Column('TypeServiceID', Integer, primary_key=True),
-		Column('TypeService', String)
+		Column('TypeServiceName', String)
 	)
 	
     service = Table('Service', metadata,
 		Column('ServiceID', Integer, primary_key=True),
 		Column('TypeServiceID', Integer, ForeignKey('TypeService.TypeServiceID')),
-		Column('Service', String)
+		Column('ServiceName', String)
 	)
 	
     managers = Table('Managers', metadata,
