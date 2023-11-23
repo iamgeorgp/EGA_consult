@@ -1,11 +1,12 @@
 import sys
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QSpacerItem, QSizePolicy, QSizePolicy, QDesktopWidget, QMessageBox, QComboBox, QTextEdit, QTableWidget, QHBoxLayout, QSplitter, QScrollArea, QFileDialog, QTableWidgetItem, QApplication, QDateEdit
+from PyQt5.QtWidgets import QWidget, QLabel, QCalendarWidget, QDesktopWidget,QFrame, QLineEdit,  QPushButton, QVBoxLayout, QSpacerItem, QSizePolicy, QSizePolicy, QDesktopWidget, QMessageBox, QComboBox, QTextEdit, QTableWidget, QHBoxLayout, QSplitter, QScrollArea, QFileDialog, QTableWidgetItem, QApplication, QDateEdit
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt
 import csv
 import sqlite3
 from PIL import Image, ImageDraw, ImageFont
 import os
+from datetime import datetime
 
 class LoginApp(QWidget):
     def __init__(self):
@@ -441,6 +442,17 @@ class LoginApp(QWidget):
 
     def add_data_screen(self):
         self.add_data_window = QWidget()
+        self.add_data_window.setWindowTitle('Add Data')
+        # Создаем объект QDesktopWidget для получения информации об экране пользователя
+        desktop = QDesktopWidget()
+
+        # Получаем размеры главного экрана пользователя
+        screen_size = desktop.screenGeometry()
+
+        # Ширина и высота главного экрана пользователя
+        width = screen_size.width()
+        height = screen_size.height()
+        self.add_data_window.setFixedWidth(width)
         
         
         
@@ -449,17 +461,211 @@ class LoginApp(QWidget):
 
         # init  layout of adding data
         add_data_in_table = QHBoxLayout()
+        add_data_in_table2 = QHBoxLayout()
 
+        # company_widget.setStyleSheet("border: 1px solid #ccc; border-radius: 4px;")
         # init of box clumns
-        company_layout = QVBoxLayout()
-        client_layout = QVBoxLayout()
-        type_service_layout = QVBoxLayout()
-        service_layout = QVBoxLayout()
-        manager_layout = QVBoxLayout()
+        company_frame = QFrame()
+        company_layout = QVBoxLayout(company_frame)
+        company_frame.setStyleSheet('''                    
+            QFrame {
+                border: 1px solid #ccc;
+                font-size: 12pt;
+                border-radius: 5px;
+                background-color: #ffffff
+            }
+            QLabel {
+                font-size: 12pt;
+                border: none;
+            }
+            QLineEdit {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+                                    min-width: 80px;
+            }
+            QComboBox {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+                color: #333;
+                background-color: #fff;
+                selection-background-color: #e0e0e0;
+            }
+            QPushButton {
+                background-color: #005bbd;
+                border: 2px solid #005bbd;
+                border-radius: 5px;
+                color: white;
+                text-align: center
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+        ''')
+        
+        client_frame = QFrame()
+        client_layout = QVBoxLayout(client_frame)
+        client_frame.setStyleSheet('''                    
+            QFrame {
+                border: 1px solid #ccc;
+                font-size: 12pt;
+                border-radius: 5px;
+                background-color: #ffffff
+            }
+            QLabel {
+                font-size: 12pt;
+                border: none;
+            }
+            QLineEdit {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+                                   min-width: 80px;
+            }
+            QComboBox {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+                color: #333;
+                background-color: #fff;
+                selection-background-color: #e0e0e0;
+            }
+            QPushButton {
+                background-color: #005bbd;
+                border: 2px solid #005bbd;
+                border-radius: 5px;
+                color: white;
+                text-align: center
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+        ''')
+
+        type_service_frame = QFrame()
+        type_service_layout = QVBoxLayout(type_service_frame)
+        type_service_frame.setStyleSheet('''                    
+            QFrame {
+                border: 1px solid #ccc;
+                font-size: 12pt;
+                border-radius: 5px;
+                background-color: #ffffff;
+                
+            }
+            QLabel {
+                font-size: 12pt;
+                border: none;
+
+            }
+            QLineEdit {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+
+            }
+            QComboBox {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+                color: #333;
+                background-color: #fff;
+                selection-background-color: #e0e0e0;
+            }
+            QPushButton {
+                background-color: #005bbd;
+                border: 2px solid #005bbd;
+                border-radius: 5px;
+                color: white;
+                text-align: center
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+        ''')
+
+        service_frame = QFrame()
+        service_layout = QVBoxLayout(service_frame)
+        service_frame.setStyleSheet('''                    
+            QFrame {
+                border: 1px solid #ccc;
+                font-size: 12pt;
+                border-radius: 5px;
+                background-color: #ffffff
+            }
+            QLabel {
+                font-size: 12pt;
+                border: none;
+            }
+            QLineEdit {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+                                    min-width: 80px;
+            }
+            QComboBox {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+                color: #333;
+                background-color: #fff;
+                selection-background-color: #e0e0e0;
+            }
+            QPushButton {
+                background-color: #005bbd;
+                border: 2px solid #005bbd;
+                border-radius: 5px;
+                color: white;
+                text-align: center
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+        ''')
+
+        manager_frame = QFrame()
+        manager_layout = QVBoxLayout(manager_frame)
+        manager_frame.setStyleSheet('''                    
+            QFrame {
+                border: 1px solid #ccc;
+                font-size: 12pt;
+                border-radius: 5px;
+                background-color: #ffffff
+            }
+            QLabel {
+                font-size: 12pt;
+                border: none;
+            }
+            QLineEdit {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+                                    min-width: 100px;
+            }
+            QComboBox {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+                color: #333;
+                background-color: #fff;
+                selection-background-color: #e0e0e0;
+            }
+            QPushButton {
+                background-color: #005bbd;
+                border: 2px solid #005bbd;
+                border-radius: 5px;
+                color: white;
+                text-align: center
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+        ''')
 
         # Add column "Company Table"
         company_label = QLabel('Company Table')
-        company_input_label = QLabel('Enter name')
+        company_label.setAlignment(Qt.AlignCenter)
+        company_input_label = QLabel('Name')
         self.company_input = QLineEdit()
         company_add_button = QPushButton('Add')
         company_add_button.clicked.connect(self.add_company)
@@ -471,10 +677,11 @@ class LoginApp(QWidget):
 
         # add column "Client Table"
         client_label = QLabel('Сlient Table')
+        client_label.setAlignment(Qt.AlignCenter)
         client_input_layout = QHBoxLayout()
 
         client_company_choose_layout = QVBoxLayout()
-        client_company_choose_label = QLabel("Choose Company")
+        client_company_choose_label = QLabel("Company")
         self.client_company_choose = QComboBox()
         try:
             conn = sqlite3.connect('app_files\\EGA_database.db')
@@ -494,25 +701,25 @@ class LoginApp(QWidget):
         client_company_choose_layout.addWidget(self.client_company_choose)
 
         client_name_input_layout = QVBoxLayout()
-        client_name_input_label = QLabel("Enter name")
+        client_name_input_label = QLabel("Name")
         self.client_name_input = QLineEdit()
         client_name_input_layout.addWidget(client_name_input_label)
         client_name_input_layout.addWidget(self.client_name_input)
 
         client_city_input_layout = QVBoxLayout()
-        client_city_input_label = QLabel("Enter city")
+        client_city_input_label = QLabel("City")
         self.client_city_input = QLineEdit()
         client_city_input_layout.addWidget(client_city_input_label)
         client_city_input_layout.addWidget(self.client_city_input)
         
         client_address_input_layout = QVBoxLayout()
-        client_address_input_label = QLabel("Enter address")
+        client_address_input_label = QLabel("Address")
         self.client_address_input = QLineEdit()
         client_address_input_layout.addWidget(client_address_input_label)
         client_address_input_layout.addWidget(self.client_address_input)
         
         client_phone_input_layout = QVBoxLayout()
-        client_phone_input_label = QLabel("Enter phone")
+        client_phone_input_label = QLabel("Phone")
         self.client_phone_input = QLineEdit()
         client_phone_input_layout.addWidget(client_phone_input_label)
         client_phone_input_layout.addWidget(self.client_phone_input)
@@ -534,7 +741,8 @@ class LoginApp(QWidget):
 
         # Add column "TypeService Table"
         type_service_label = QLabel('TypeService Table')
-        type_service_input_label = QLabel('Enter name')
+        type_service_label.setAlignment(Qt.AlignCenter)
+        type_service_input_label = QLabel('Name')
         self.type_service_input = QLineEdit()
         type_service_add_button = QPushButton('Add')
         type_service_add_button.clicked.connect(self.add_type_service)
@@ -546,22 +754,36 @@ class LoginApp(QWidget):
 
         # Add column "Service Table"
         service_label = QLabel('Service Table')
-
+        service_label.setAlignment(Qt.AlignCenter)
         service_input_layout = QHBoxLayout()
 
         choose_type_service_layout = QVBoxLayout()
-        choose_type_service_label = QLabel('Choose Type Service')
-        choose_type_service = QComboBox()
+        choose_type_service_label = QLabel('Type Service')
+        self.choose_type_service = QComboBox()
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT DISTINCT typeservicename FROM typeservice")
+            typeservices = cursor.fetchall()
+
+            for item in typeservices:
+                self.choose_type_service.addItem(item[0])
+
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
         choose_type_service_layout.addWidget(choose_type_service_label)
-        choose_type_service_layout.addWidget(choose_type_service)
+        choose_type_service_layout.addWidget(self.choose_type_service)
 
         service_name_layout = QVBoxLayout()
-        service_name_label = QLabel('Enter name')
-        service_name_input = QLineEdit()
+        service_name_label = QLabel('Name')
+        self.service_name_input = QLineEdit()
         service_name_layout.addWidget(service_name_label)
-        service_name_layout.addWidget(service_name_input)
+        service_name_layout.addWidget(self.service_name_input)
         
         service_add_button = QPushButton('Add')
+        service_add_button.clicked.connect(self.add_service)
 
         service_input_layout.addLayout(choose_type_service_layout)
         service_input_layout.addLayout(service_name_layout)
@@ -573,40 +795,309 @@ class LoginApp(QWidget):
         
 
         manager_label = QLabel("Manager Table")
+        manager_label.setAlignment(Qt.AlignCenter)
         manager_input_layout = QHBoxLayout()
 
         manager_name_layout = QVBoxLayout()
-        manager_name_label = QLabel("Enter Name")
-        manager_name_input = QLineEdit()
+        manager_name_label = QLabel("Name")
+        self.manager_name_input = QLineEdit()
         manager_name_layout.addWidget(manager_name_label)
-        manager_name_layout.addWidget(manager_name_input)
+        manager_name_layout.addWidget(self.manager_name_input)
 
         manager_phone_layout = QVBoxLayout()
-        manager_phone_label = QLabel("Enter Phone")
-        manager_phone_input = QLineEdit()
+        manager_phone_label = QLabel("Phone")
+        self.manager_phone_input = QLineEdit()
         manager_phone_layout.addWidget(manager_phone_label)
-        manager_phone_layout.addWidget(manager_phone_input)
+        manager_phone_layout.addWidget(self.manager_phone_input)
 
         manager_input_layout.addLayout(manager_name_layout)
         manager_input_layout.addLayout(manager_phone_layout)
 
         manager_add_button = QPushButton('Add')
+        manager_add_button.clicked.connect(self.add_manager)
 
         manager_layout.addWidget(manager_label)
         manager_layout.addLayout(manager_input_layout)
         manager_layout.addWidget(manager_add_button)
 
-        add_data_in_table.addLayout(company_layout)
-        add_data_in_table.addLayout(client_layout)
-        add_data_in_table.addLayout(type_service_layout)
-        add_data_in_table.addLayout(service_layout)
-        add_data_in_table.addLayout(manager_layout)
+        company_frame.setLayout(company_layout)
+        client_frame.setLayout(client_layout)
+        type_service_frame.setLayout(type_service_layout)
+        service_frame.setLayout(service_layout)
+        manager_frame.setLayout(manager_layout)
+
+        add_data_in_table.addWidget(company_frame)
+        add_data_in_table.addWidget(client_frame)
+        
+        add_data_in_table2.addWidget(type_service_frame)
+        add_data_in_table2.addWidget(service_frame)
+        add_data_in_table2.addWidget(manager_frame)
+        
+        add_data_in_table.setSpacing(10)
+        add_data_in_table2.setSpacing(10)
+
+        add_data_in_contract = QVBoxLayout()
+        contract_frame = QFrame()
+        contract_frame.setStyleSheet('''                    
+            QFrame {
+                border: 1px solid #ccc;
+                font-size: 8pt;
+                border-radius: 5px;
+                background-color: #ffffff
+            }
+            QLabel {
+                height: 20px;
+                font-size: 12pt;
+                border: none;
+            }
+            QLineEdit {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+                height: 20px;
+                min-width: 100px;
+            }
+            QComboBox {
+                border: 2px solid #ccc;
+                border-radius: 4px;
+                font-size: 14px;
+                color: #333;
+                background-color: #fff;
+                selection-background-color: #e0e0e0;
+                                    
+            }
+            QPushButton {
+                background-color: #005bbd;
+                border: 2px solid #005bbd;
+                border-radius: 5px;
+                color: white;
+                text-align: center;
+                                     min-width: 80px;
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+        ''')
+        contract_layout = QVBoxLayout(contract_frame)
+        contract_label = QLabel('Contract Table')
+        contract_label.setAlignment(Qt.AlignCenter)
+        contract_input_layout = QHBoxLayout()
+
+        contract_company_layout = QVBoxLayout()
+        contract_company_label = QLabel("Company")
+        self.contract_company_choose = QComboBox()
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT DISTINCT companyname FROM Company order by companyname asc")
+            companies = cursor.fetchall()
+
+            for company in companies:
+                self.contract_company_choose.addItem(company[0])
+
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        contract_company_layout.addWidget(contract_company_label)
+        contract_company_layout.addWidget(self.contract_company_choose)
+        contract_company_layout.addSpacing(40)
+
+        contract_client_layout = QVBoxLayout()
+        contract_client_label = QLabel("Client")
+        self.contract_client_choose = QComboBox()
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT DISTINCT clientname FROM clients order by clientname asc")
+            clients = cursor.fetchall()
+
+            for client in clients:
+                self.contract_client_choose.addItem(client[0])
+
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        contract_client_layout.addWidget(contract_client_label)
+        contract_client_layout.addWidget(self.contract_client_choose)
+        contract_client_layout.addSpacing(40)
+
+        contract_type_service_layout = QVBoxLayout()
+        contract_type_service_label = QLabel("Type service")
+        self.contract_type_service_choose = QComboBox()
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT DISTINCT typeservicename FROM typeservice")
+            typeservices = cursor.fetchall()
+
+            for typeservice in typeservices:
+                self.contract_type_service_choose.addItem(typeservice[0])
+
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        contract_company_layout.addWidget(contract_type_service_label)
+        contract_company_layout.addWidget(self.contract_type_service_choose)
+        contract_company_layout.addSpacing(40)
+
+        contract_service_layout = QVBoxLayout()
+        contract_service_label = QLabel("Service")
+        self.contract_service_choose = QComboBox()
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT DISTINCT servicename FROM service")
+            services = cursor.fetchall()
+
+            for service in services:
+                self.contract_service_choose.addItem(service[0])
+
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        contract_client_layout.addWidget(contract_service_label)
+        contract_client_layout.addWidget(self.contract_service_choose)
+        contract_client_layout.addSpacing(40)
+
+        contract_price_layout = QVBoxLayout()
+        contract_price_label = QLabel('Price')
+        self.contract_price_input = QLineEdit()
+        contract_price_layout.addWidget(contract_price_label)
+        contract_price_layout.addWidget(self.contract_price_input)
+        contract_price_layout.addSpacing(40)
+
+        contract_manager_label = QLabel('Manager')
+        self.contract_manager_choose = QComboBox()
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT DISTINCT managername FROM managers order by managername asc")
+            managers = cursor.fetchall()
+
+            for manager in managers:
+                self.contract_manager_choose.addItem(manager[0])
+
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        contract_price_layout.addWidget(contract_manager_label)
+        contract_price_layout.addWidget(self.contract_manager_choose)
+        contract_price_layout.addSpacing(40)
+
+
+        contract_signing_date_layout = QVBoxLayout()
+        contract_signing_date_label = QLabel("Signing date")
+        self.contract_signing_date = QCalendarWidget()
+        self.contract_signing_date.setGridVisible(False)
+        contract_signing_date_layout.addWidget(contract_signing_date_label)
+        contract_signing_date_layout.addWidget(self.contract_signing_date)
+
+        contract_start_date_layout = QVBoxLayout()
+        contract_start_date_label = QLabel("Start date")
+        contract_start_date = QCalendarWidget()
+        contract_start_date.setGridVisible(False)
+        contract_start_date_layout.addWidget(contract_start_date_label)
+        contract_start_date_layout.addWidget(contract_start_date)
+
+        contract_end_date_layout = QVBoxLayout()
+        contract_end_date_label = QLabel("End date")
+        contract_end_date = QCalendarWidget()
+        contract_end_date.setGridVisible(False)
+        contract_end_date_layout.addWidget(contract_end_date_label)
+        contract_end_date_layout.addWidget(contract_end_date)
+
+
+        contract_price_date_layout = QVBoxLayout()
+        contract_price_date_label = QLabel("Pay date")
+        contract_price_date = QCalendarWidget()
+        contract_price_date.setGridVisible(False)
+        contract_price_date_layout.addWidget(contract_price_date_label)
+        contract_price_date_layout.addWidget(contract_price_date)
+
+
+        
+        contract_add_button = QPushButton('Add')
+        contract_add_button.clicked.connect(self.add_contract)
+
+        contract_input_layout.addLayout(contract_company_layout)
+        contract_input_layout.addLayout(contract_client_layout)
+        # contract_input_layout.addLayout(contract_type_service_layout)
+        # contract_input_layout.addLayout(contract_service_layout)
+        contract_input_layout.addLayout(contract_price_layout)
+        contract_input_layout.addLayout(contract_signing_date_layout)
+        # contract_input_layout.addLayout(contract_start_date_layout)
+        # contract_input_layout.addLayout(contract_end_date_layout)
+        # contract_input_layout.addLayout(contract_price_date_layout)
+
+        
+        contract_layout.addWidget(contract_label)
+        contract_layout.addLayout(contract_input_layout)
+        contract_layout.addWidget(contract_add_button)
+
+        contract_frame.setLayout(contract_layout)
+        add_data_in_contract.addWidget(contract_frame)
+
 
         main_layout.addLayout(add_data_in_table)
+        main_layout.addLayout(add_data_in_table2)
+        main_layout.addLayout(add_data_in_contract)
 
-
+        
         self.add_data_window.setLayout(main_layout)
+        
         self.add_data_window.show()
+
+
+    def add_contract(self) -> None:
+        company_name = self.contract_company_choose.currentText()
+        client_name = self.contract_client_choose.currentText()
+        type_service_name = self.contract_type_service_choose.currentText()
+        service_name = self.contract_service_choose.currentText()
+        manager_name = self.contract_manager_choose.currentText()
+        price_sum = self.contract_price_input.text()
+        signing_date_str = self.contract_signing_date.selectedDate().toString("yyyy-MM-dd")
+        # signing_date = datetime.strptime(signing_date_str, '%Y-%m-%d')
+        
+
+        if price_sum != '' and price_sum.isnumeric():
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT MAX(contractid) FROM contracts")
+            max_contract_id = cursor.fetchone()[0]
+            new_contract_id = max_contract_id + 1 if max_contract_id else 1
+
+            cursor.execute("SELECT companyid FROM company WHERE companyname = ?", (company_name,))
+            company_id = cursor.fetchone()[0]
+
+            cursor.execute("SELECT clientid FROM clients WHERE clientname = ?", (client_name,))
+            client_id = cursor.fetchone()[0]
+
+            cursor.execute("SELECT typeserviceid FROM typeservice WHERE typeservicename = ?", (type_service_name,))
+            typeservice_id = cursor.fetchone()[0]
+
+            cursor.execute("SELECT serviceid FROM service WHERE servicename = ?", (service_name,))
+            service_id = cursor.fetchone()[0]
+
+            cursor.execute("SELECT managerid FROM managers WHERE managername = ?", (manager_name,))
+            manager_id = cursor.fetchone()[0]
+
+            cursor.execute('''
+                INSERT INTO Contracts (ContractID, CompanyID, ClientID, TypeServiceID, ServiceID, SigningDate, Price, ManagerID)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (new_contract_id, company_id, client_id, typeservice_id, service_id, signing_date_str, price_sum, manager_id))
+
+            conn.commit()
+            QMessageBox.information(self.sql_window, 'Success', 'Contract added successfully.')
+            conn.close() 
+
+        
+
 
     def add_company(self) -> None:
         company_name = self.company_input.text()
@@ -625,6 +1116,7 @@ class LoginApp(QWidget):
                     cursor.execute("INSERT INTO Company (companyid, companyname) SELECT COALESCE(MAX(companyid), 0) + 1, ? FROM Company", (company_name,))
                     conn.commit()
                     self.client_company_choose.addItem(company_name)
+                    self.contract_company_choose.addItem(company_name)
                     QMessageBox.information(self.sql_window, 'Success', 'Company added successfully.')
 
                 conn.close()
@@ -634,6 +1126,9 @@ class LoginApp(QWidget):
         self.company_input.clear()
         self.add_data_window.raise_()
 
+    
+    
+
     def add_client(self) -> None:
         client_name = self.client_name_input.text()
         client_city = self.client_city_input.text()
@@ -641,7 +1136,7 @@ class LoginApp(QWidget):
         client_phone = self.client_phone_input.text()
         client_company_name = self.client_company_choose.currentText()
 
-        if client_name != '' and client_city != '' and client_address != '' and client_phone != '':
+        if client_name != '' or client_city != '' or client_address != '' or client_phone != '':
             try:
                 conn = sqlite3.connect('app_files\\EGA_database.db')
                 cursor = conn.cursor()
@@ -650,6 +1145,7 @@ class LoginApp(QWidget):
                 existing_company = cursor.fetchone()
                 if existing_company:
                     QMessageBox.warning(self.sql_window, 'Existing client', 'Client with this name already exists.')
+                    conn.close()    
                 else:
                     cursor.execute("SELECT MAX(clientid) FROM clients")
                     max_client_id = cursor.fetchone()[0]
@@ -663,15 +1159,54 @@ class LoginApp(QWidget):
                     cursor.execute("INSERT INTO clients (clientid, companyid, clientname, address, city, clientphone) VALUES (?, ?, ?, ?, ?, ?)",
                            (new_client_id, company_id, client_name, client_address, client_city, client_phone))
                     conn.commit()
-                    QMessageBox.information(self.sql_window, 'Success', 'Company added successfully.')
+                    self.contract_client_choose.addItem(client_name)
+                    QMessageBox.information(self.sql_window, 'Success', 'Client added successfully.')
+                    conn.close()    
             except sqlite3.Error as e:
                 QMessageBox.warning(self, 'Query execution error', f'Error: {str(e)}')
-        conn.close()         
+             
         self.client_name_input.clear()
         self.client_city_input.clear()
         self.client_address_input.clear()
         self.client_phone_input.clear()
         self.add_data_window.raise_()
+
+    def add_service(self) -> None:
+        service_name = self.service_name_input.text()
+        type_service_name = self.choose_type_service.currentText()
+        
+        if service_name != '':
+            try:
+                conn = sqlite3.connect('app_files\\EGA_database.db')
+                cursor = conn.cursor()
+
+                cursor.execute("SELECT * FROM service WHERE servicename = ?", (service_name,))
+                existing_company = cursor.fetchone()
+                if existing_company:
+                    QMessageBox.warning(self.sql_window, 'Existing service', 'service with this name already exists.')
+                    conn.close()  
+                else:
+                    cursor.execute("SELECT MAX(serviceid) FROM service")
+                    max_serviceid = cursor.fetchone()[0]
+                    print(max_serviceid)
+                    new_service_id = max_serviceid + 1 if max_serviceid else 1
+
+                    cursor.execute("SELECT typeserviceid FROM typeservice WHERE typeservicename = ?", (type_service_name,))
+                    type_service_id = cursor.fetchone()[0]
+                    print(type_service_id)
+
+                    cursor.execute("INSERT INTO service (serviceid, typeserviceid, servicename) VALUES (?, ?, ?)",
+                           (new_service_id, type_service_id, service_name))
+                    conn.commit()
+                    self.contract_service_choose.addItem(service_name)
+                    QMessageBox.information(self.sql_window, 'Success', 'Service added successfully.')
+                    conn.close() 
+            except sqlite3.Error as e:
+                QMessageBox.warning(self, 'Query execution error', f'Error: {str(e)}')
+
+            self.service_name_input.clear()
+            self.add_data_window.raise_()
+
 
     def add_type_service(self) -> None:
         type_service = self.type_service_input.text()
@@ -685,17 +1220,46 @@ class LoginApp(QWidget):
                 existing_company = cursor.fetchone()
 
                 if existing_company:
-                    QMessageBox.warning(self.sql_window, 'Existing company', 'Company with this name already exists.')
+                    QMessageBox.warning(self.sql_window, 'Existing type service', 'Type service with this name already exists.')
                 else:
                     cursor.execute("INSERT INTO typeservice (typeserviceid, typeservicename) SELECT COALESCE(MAX(typeserviceid), 0) + 1, ? FROM typeservice", (type_service,))
                     conn.commit()
-                    QMessageBox.information(self.sql_window, 'Success', 'Company added successfully.')
+                    self.contract_service_choose.addItem(type_service)
+                    QMessageBox.information(self.sql_window, 'Success', 'Type service added successfully.')
+                    self.choose_type_service.addItem(type_service)
+
+                conn.close()
+            except sqlite3.Error as e:
+                QMessageBox.warning(self.sql_window, 'Query execution error', f'Error: {str(e)}')
+        
+        self.type_service_input.clear()
+        self.add_data_window.raise_()
+
+    def add_manager(self) -> None:
+        manager_name = self.manager_name_input.text()
+        manager_phone = self.manager_phone_input.text()
+        if manager_name != '' or manager_phone != '':
+            try:
+                conn = sqlite3.connect('app_files\\EGA_database.db')
+                cursor = conn.cursor()
+
+                cursor.execute("SELECT * FROM Managers WHERE managername = ?", (manager_name,))
+                existing_manager = cursor.fetchone()
+
+                if existing_manager:
+                    QMessageBox.warning(self.sql_window, 'Existing manager', 'Manager with this name already exists.')
+                else:
+                    cursor.execute("INSERT INTO Managers (ManagerID, managername, managerphone) SELECT COALESCE(MAX(ManagerID), 0) + 1, ?, ? FROM Managers", (manager_name, manager_phone))
+                    conn.commit()
+                    self.contract_manager_choose.addItem(manager_name)
+                    QMessageBox.information(self.sql_window, 'Success', 'Manager added successfully.')
 
                 conn.close()
             except sqlite3.Error as e:
                 QMessageBox.warning(self.sql_window, 'Query execution error', f'Error: {str(e)}')
     
-        self.type_service_input.clear()
+        self.manager_name_input.clear()
+        self.manager_phone_input.clear()
         self.add_data_window.raise_()
 
     def load_contract_image(self) -> None:
@@ -732,7 +1296,7 @@ class LoginApp(QWidget):
         try:
             conn = sqlite3.connect('app_files\\EGA_database.db')
             cursor = conn.cursor()
-            cursor.execute(f"select signingdate, contractid, service,  companyname, clientname, clientphone, startdate, enddate, paydate, price from contracts join TypeService using(TypeServiceID) join service using(serviceid) join company using(companyid) join clients using(clientid) join managers using(managerid) where contractid = '{contract_number}'")
+            cursor.execute(f"select signingdate, contractid, servicename,  companyname, clientname, clientphone, startdate, enddate, paydate, price from contracts join TypeService using(TypeServiceID) join service using(serviceid) join company using(companyid) join clients using(clientid) join managers using(managerid) where contractid = '{contract_number}'")
             rows = cursor.fetchall()
             
 
@@ -808,7 +1372,13 @@ class LoginApp(QWidget):
         selected_word = self.second_combo.currentText()
         
         if selected_action == "Contracts report":
-            self.sql_input.setPlainText("SELECT\n\t* \nFROM Contracts;")
+            self.sql_input.setPlainText('''SELECT ContractID, clients.CompanyID, CompanyName, ClientID, ClientName, service.TypeServiceID, TypeServiceName, ServiceID, ServiceName, SigningDate, StartDate, EndDate, PayDate, Price, ManagerID, ManagerName 
+FROM Contracts 
+join company using(companyid)
+join clients using(clientid)
+join typeservice using(typeserviceid)
+join service using(serviceid)
+join managers using(managerid)''')
             self.second_combo.clear()
         if selected_action == "Three most important customers (those who brought the most profit)":
             self.sql_input.setPlainText("SELECT \n\tClientID, ClientName, SUM(Price) AS TotalProfit\nFROM Contracts\nJOIN Clients USING(ClientID)\nGROUP BY ClientID\nORDER BY TotalProfit DESC\nLIMIT 3;")
@@ -823,7 +1393,7 @@ class LoginApp(QWidget):
 
         
         if selected_action == "List of clients grouped by city":
-            self.sql_input.setPlainText(f"SELECT \n\t* \nFROM Clients WHERE City = '{selected_word}';")
+            self.sql_input.setPlainText("SELECT city, sum(price) as Sum, count(*) as Amount \nFROM Clients join contracts using(clientid) group by city;")
 
         if selected_action == "List of individual service contracts":
             self.sql_input.setPlainText(f"SELECT \n\t*\nFROM Contracts\nJOIN Service USING(ServiceID)\nWHERE Service ='{selected_word}';")
