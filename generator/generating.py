@@ -1,10 +1,10 @@
 import gen_funcs2
 
-num_cities = 30         # Amount of clients' cities
-num_companies = 1200      # Amount of clients' companies
-max_clients_num_one_company = 3 # For generating for one company several clients from 1 to ...
-max_contracts_num_one_client = 3 # For generating for one client several contracts from 1 to ...
-num_managers = 82   # Amount of managers from consulting agency 
+num_cities = 15         # Amount of clients' cities
+num_companies = 600      # Amount of clients' companies
+max_clients_num_one_company = 2 # For generating for one company several clients from 1 to ...
+max_contracts_num_one_client = 2 # For generating for one client several contracts from 1 to ...
+num_managers = 30   # Amount of managers from consulting agency 
 years = 6 # Duration of work of the consulting agency in years
 max_day_delta_start_date = 21 # Day timedelta between signing contract and start date
 # Duration of work (timedelta between start_date and end_date)
