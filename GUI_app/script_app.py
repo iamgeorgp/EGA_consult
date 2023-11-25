@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QWidget, QLabel, QCalendarWidget, QDesktopWidget,QFrame, QLineEdit,  QPushButton, QVBoxLayout, QSpacerItem, QSizePolicy, QSizePolicy, QDesktopWidget, QMessageBox, QComboBox, QTextEdit, QTableWidget, QHBoxLayout, QSplitter, QScrollArea, QFileDialog, QTableWidgetItem, QApplication, QDateEdit
 from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QDate
 import csv
 import sqlite3
 from PIL import Image, ImageDraw, ImageFont
@@ -364,6 +364,7 @@ class LoginApp(QWidget):
 
         upper_left_button_layout = QHBoxLayout()
         change_button = QPushButton('Change Data') 
+        change_button.clicked.connect(self.update_data_screen)
         add_button = QPushButton('Add Data')
         add_button.clicked.connect(self.add_data_screen)
         delete_button = QPushButton('Delete Data')
@@ -439,6 +440,502 @@ class LoginApp(QWidget):
         # Full screen
         self.sql_window.showFullScreen()
 
+
+
+    def update_data_screen(self):
+        print(1)
+        self.update_contract_signing_date_choose = QDateEdit()
+        self.update_contract_start_date_choose = QDateEdit()
+        self.update_contract_end_date_choose = QDateEdit()
+        self.update_contract_pay_date_choose = QDateEdit()
+        self.update_contract_price_choose = QLineEdit()
+        self.update_data_window = QWidget()
+        self.update_data_window.setWindowTitle('Update Data')
+        desktop = QDesktopWidget()
+        # Получаем размеры главного экрана пользователя
+        screen_size = desktop.screenGeometry()
+
+        # Ширина и высота главного экрана пользователя
+        width = screen_size.width()
+        height = screen_size.height()
+        self.update_data_window.setFixedWidth(width)
+
+        # main add data window layout
+        update_main_layout = QVBoxLayout()
+
+        line1 = QHBoxLayout()
+        
+
+        update_company_frame = QFrame()
+        update_company_layout = QVBoxLayout()
+        update_company_label = QLabel("Company table")
+        update_company_input_layout = QHBoxLayout()
+        update_company_choose_layout = QVBoxLayout()
+        update_company_choose_label = QLabel("Prev name")
+        self.update_company_choose = QComboBox()
+        self.update_client_company_choose = QComboBox()
+        self.update_contract_company_choose = QComboBox()
+        update_company_choose_layout.addWidget(update_company_choose_label)
+        update_company_choose_layout.addWidget(self.update_company_choose)
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT DISTINCT companyname FROM Company")
+            companies = cursor.fetchall()
+            for company in companies:
+                self.update_company_choose.addItem(company[0])
+                self.update_client_company_choose.addItem(company[0])
+                self.update_contract_company_choose.addItem(company[0])
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        update_company_edit_layout = QVBoxLayout()
+        update_company_edit_label = QLabel("New name")
+        self.update_company_edit = QLineEdit()
+        update_company_edit_layout.addWidget(update_company_edit_label)
+        update_company_edit_layout.addWidget(self.update_company_edit)
+        update_company_button = QPushButton('Change')
+        update_company_button.clicked.connect(self.update_company_table)
+        update_company_input_layout.addLayout(update_company_choose_layout)
+        update_company_input_layout.addLayout(update_company_edit_layout)
+        update_company_layout.addWidget(update_company_label)
+        update_company_layout.addLayout(update_company_input_layout)
+        update_company_layout.addWidget(update_company_button)
+
+        update_company_frame.setLayout(update_company_layout)
+
+
+        update_client_frame = QFrame()
+        update_client_layout = QVBoxLayout()
+        update_client_label = QLabel('Client Table')
+        update_client_button = QPushButton('Change')
+        update_client_input_layout = QHBoxLayout()
+
+        update_client_name_layout = QVBoxLayout()
+        update_client_name_label = QLabel('Prev Name')
+        self.update_client_name_choose = QComboBox()
+        self.update_contract_client_choose = QComboBox()
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT clientname FROM clients")
+            clientnames = cursor.fetchall()
+            for clientname in clientnames:
+                self.update_client_name_choose.addItem(clientname[0])
+                self.update_contract_client_choose.addItem(clientname[0])
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        self.update_client_name_choose.currentIndexChanged.connect(self.on_client_changed)
+        update_client_name_layout.addWidget(update_client_name_label)
+        update_client_name_layout.addWidget(self.update_client_name_choose)
+
+
+        update_client_company_layout = QVBoxLayout()
+        update_client_company_label = QLabel("Company")
+        
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT companyname FROM Company join clients using(companyid) where clientname = ?", (self.update_client_name_choose.currentText(),))
+            curent_company = cursor.fetchone()[0]
+            
+            
+            self.update_client_company_choose.setCurrentText(curent_company)
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        update_client_company_layout.addWidget(update_client_company_label)
+        update_client_company_layout.addWidget(self.update_client_company_choose)
+
+        update_client_new_name_layout = QVBoxLayout()
+        update_client_new_name_label = QLabel('New cleint name')
+        update_client_new_name_input = QLineEdit()
+        update_client_new_name_layout.addWidget(update_client_new_name_label)
+        update_client_new_name_layout.addWidget(update_client_new_name_input)
+
+        update_client_city_layout = QVBoxLayout()
+        update_client_city_label = QLabel('City')
+        update_client_city = QLineEdit()
+        update_client_city_layout.addWidget(update_client_city_label)
+        update_client_city_layout.addWidget(update_client_city)
+
+        update_client_address_layout = QVBoxLayout()
+        update_client_adress_label = QLabel('Address')
+        update_client_address = QLineEdit()
+        update_client_address_layout.addWidget(update_client_adress_label)
+        update_client_address_layout.addWidget(update_client_address)
+
+        update_client_phone_layout = QVBoxLayout()
+        update_client_phone_label = QLabel('Phone')
+        update_client_phone = QLineEdit()
+        update_client_phone_layout.addWidget(update_client_phone_label)
+        update_client_phone_layout.addWidget(update_client_phone)
+
+        update_client_input_layout.addLayout(update_client_name_layout)
+        update_client_input_layout.addLayout(update_client_company_layout) 
+        update_client_input_layout.addLayout(update_client_new_name_layout)
+        update_client_input_layout.addLayout(update_client_city_layout)
+        update_client_input_layout.addLayout(update_client_address_layout)
+        update_client_input_layout.addLayout(update_client_phone_layout)
+
+        update_client_layout.addWidget(update_client_label)
+        update_client_layout.addLayout(update_client_input_layout)
+        update_client_layout.addWidget(update_client_button)
+        update_client_frame.setLayout(update_client_layout)
+
+
+        
+
+        line1.addWidget(update_company_frame)
+        line1.addWidget(update_client_frame)
+
+
+
+        line2 = QHBoxLayout()
+
+        update_type_service_frame = QFrame()
+        update_type_service_label = QLabel('Type service tabel')
+        update_type_service_layout = QVBoxLayout()
+        update_type_service_button = QPushButton('Change')
+
+        update_type_service_input_layout = QHBoxLayout()
+
+        update_type_service_choose_layout = QVBoxLayout()
+        update_type_service_choose_label = QLabel('Prev name')
+        self.update_type_service_choose = QComboBox()
+        self.update_service_type_service_choose = QComboBox()
+        self.update_contract_type_service_choose = QComboBox()
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT typeservicename FROM typeservice")
+            typeservicenames = cursor.fetchall()
+            for typeservicename in typeservicenames:
+                self.update_type_service_choose.addItem(typeservicename[0])
+                self.update_service_type_service_choose.addItem(typeservicename[0])
+                self.update_contract_type_service_choose.addItem(typeservicename[0])
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        update_type_service_choose_layout.addWidget(update_type_service_choose_label)
+        update_type_service_choose_layout.addWidget(self.update_type_service_choose)
+        update_type_service_edit_layout = QVBoxLayout()
+        update_type_service_edit_lable = QLabel('New name')
+        update_type_service_edit = QLineEdit()
+        update_type_service_edit_layout.addWidget(update_type_service_edit_lable)
+        update_type_service_edit_layout.addWidget(update_type_service_edit)
+        
+        update_type_service_input_layout.addLayout(update_type_service_choose_layout)
+        update_type_service_input_layout.addLayout(update_type_service_edit_layout)
+
+        update_type_service_layout.addWidget(update_type_service_label)
+        update_type_service_layout.addLayout(update_type_service_input_layout)
+        update_type_service_layout.addWidget(update_type_service_button)
+        update_type_service_frame.setLayout(update_type_service_layout)
+
+        update_service_frame = QFrame()
+        update_service_label = QLabel("Service table")
+        update_service_layout = QVBoxLayout()
+        update_service_button = QPushButton("Change")
+        update_service_input_layout = QHBoxLayout()
+        update_service_type_service_choose_layout = QVBoxLayout()
+        update_service_type_service_choose_label = QLabel("Type service")
+        
+        update_service_type_service_choose_layout.addWidget(update_service_type_service_choose_label)
+        update_service_type_service_choose_layout.addWidget(self.update_service_type_service_choose)
+
+        update_service_choose_layout = QVBoxLayout()
+        update_service_choose_label = QLabel("Prev name")
+        self.update_service_choose = QComboBox()
+        self.update_contract_service_choose = QComboBox()
+        self.update_service_choose.currentIndexChanged.connect(self.on_service_changed)
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT servicename FROM service")
+            servicenames = cursor.fetchall()
+            for servicename in servicenames:
+                self.update_service_choose.addItem(servicename[0])
+                self.update_contract_service_choose.addItem(servicename[0])
+            cursor.execute("SELECT typeservicename FROM service join typeservice using(typeserviceid) where servicename = ?", (self.update_service_choose.currentText(),))
+            curent_typeservice = cursor.fetchone()[0]
+            self.update_type_service_choose.setCurrentText(curent_typeservice)
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        update_service_choose_layout.addWidget(update_service_choose_label)
+        update_service_choose_layout.addWidget(self.update_service_choose)
+
+        update_service_edit_layout = QVBoxLayout()
+        update_service_edit_label = QLabel("New name")
+        update_service_edit = QLineEdit()
+        update_service_edit_layout.addWidget(update_service_edit_label)
+        update_service_edit_layout.addWidget(update_service_edit)
+
+        update_service_input_layout.addLayout(update_service_choose_layout)
+        update_service_input_layout.addLayout(update_service_type_service_choose_layout)
+        update_service_input_layout.addLayout(update_service_edit_layout)
+        
+        update_service_layout.addWidget(update_service_label)
+        update_service_layout.addLayout(update_service_input_layout)
+        update_service_layout.addWidget(update_service_button)
+        update_service_frame.setLayout(update_service_layout)
+
+        line3 = QHBoxLayout()
+        update_manager_frame = QFrame()
+        update_manager_label = QLabel("Manager table")
+        update_manager_layout = QVBoxLayout()
+        update_manager_input_layout = QHBoxLayout()
+        update_manager_button = QPushButton("Change")
+        update_manager_choose_layout = QVBoxLayout()
+        update_manager_choose_label = QLabel("Prev name")
+        self.update_manager_choose = QComboBox()
+        self.update_contract_manager_choose = QComboBox()
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT managername FROM managers")
+            managernames = cursor.fetchall()
+            for managername in managernames:
+                self.update_manager_choose.addItem(managername[0])
+                self.update_contract_manager_choose.addItem(managername[0])
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+
+        update_manager_choose_layout.addWidget(update_manager_choose_label)
+        update_manager_choose_layout.addWidget(self.update_manager_choose)
+        update_manager_name_edit_layout = QVBoxLayout()
+        update_manager_name_edit_label = QLabel("New name")
+        update_manager_name_edit = QLineEdit()
+        update_manager_name_edit_layout.addWidget(update_manager_name_edit_label)
+        update_manager_name_edit_layout.addWidget(update_manager_name_edit)
+        update_manager_phone_edit_layout = QVBoxLayout()
+        update_manager_phone_edit_label = QLabel("Phone")
+        update_manager_phone_edit = QLineEdit()
+        update_manager_phone_edit_layout.addWidget(update_manager_phone_edit_label)
+        update_manager_phone_edit_layout.addWidget(update_manager_phone_edit)
+
+        update_manager_input_layout.addLayout(update_manager_choose_layout)
+        update_manager_input_layout.addLayout(update_manager_name_edit_layout)
+        update_manager_input_layout.addLayout(update_manager_phone_edit_layout)
+
+        update_manager_layout.addWidget(update_manager_label)
+        update_manager_layout.addLayout(update_manager_input_layout)
+        update_manager_layout.addWidget(update_manager_button)
+        update_manager_frame.setLayout(update_manager_layout)
+
+        update_contract_frame = QFrame()
+        update_contract_layout = QVBoxLayout()
+        update_contract_label = QLabel("Contract Table")
+        self.update_contract_button = QPushButton("Change")
+        self.update_contract_button.clicked.connect(self.update_contract)
+        update_contract_number_layout = QVBoxLayout()
+        update_contract_number_label = QLabel("Number")
+        self.update_contract_number_choose = QComboBox()
+        self.update_contract_number_choose.currentIndexChanged.connect(self.on_contract_changed)
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+            cursor.execute("select contractid from contracts")
+            contractids = cursor.fetchall()
+            for contractid in contractids:
+                self.update_contract_number_choose.addItem(str(contractid[0]))
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        update_contract_number_layout.addWidget(update_contract_number_label)
+        update_contract_number_layout.addWidget(self.update_contract_number_choose)
+        update_contract_company_layout = QVBoxLayout()
+        update_contract_company_label = QLabel("company")
+        
+        update_contract_company_layout.addWidget(update_contract_company_label)
+        update_contract_company_layout.addWidget(self.update_contract_company_choose)
+        update_contract_client_layout = QVBoxLayout()
+        update_contract_client_label = QLabel("client")
+        
+        update_contract_client_layout.addWidget(update_contract_client_label)
+        update_contract_client_layout.addWidget(self.update_contract_client_choose)
+        update_contract_type_service_layout = QVBoxLayout()
+        update_contract_type_service_label = QLabel("type_service")
+        
+        update_contract_type_service_layout.addWidget(update_contract_type_service_label)
+        update_contract_type_service_layout.addWidget(self.update_contract_type_service_choose)
+        update_contract_service_layout = QVBoxLayout()
+        update_contract_service_label = QLabel("service")
+        
+        update_contract_service_layout.addWidget(update_contract_service_label)
+        update_contract_service_layout.addWidget(self.update_contract_service_choose)
+        update_contract_manager_layout = QVBoxLayout()
+        update_contract_manager_label = QLabel("manager")
+        
+        update_contract_manager_layout.addWidget(update_contract_manager_label)
+        update_contract_manager_layout.addWidget(self.update_contract_manager_choose)
+        update_contract_signing_date_layout = QVBoxLayout()
+        update_contract_signing_date_label = QLabel("signing_date")
+        
+        self.update_contract_signing_date_choose.setCalendarPopup(True)
+        self.update_contract_signing_date_choose.setDisplayFormat("yyyy-MM-dd")
+        update_contract_signing_date_layout.addWidget(update_contract_signing_date_label)
+        update_contract_signing_date_layout.addWidget(self.update_contract_signing_date_choose)
+        update_contract_start_date_layout = QVBoxLayout()
+        update_contract_start_date_label = QLabel("start_date")
+        
+        self.update_contract_start_date_choose.setCalendarPopup(True)
+        self.update_contract_start_date_choose.setDisplayFormat("yyyy-MM-dd")
+
+        update_contract_start_date_layout.addWidget(update_contract_start_date_label)
+        update_contract_start_date_layout.addWidget(self.update_contract_start_date_choose)
+        update_contract_end_date_layout = QVBoxLayout()
+        update_contract_end_date_label = QLabel("end_date")
+        
+        self.update_contract_end_date_choose.setCalendarPopup(True)
+        self.update_contract_end_date_choose.setDisplayFormat("yyyy-MM-dd")
+        update_contract_end_date_layout.addWidget(update_contract_end_date_label)
+        update_contract_end_date_layout.addWidget(self.update_contract_end_date_choose)
+        update_contract_pay_date_layout = QVBoxLayout()
+        update_contract_pay_date_label = QLabel("pay_date")
+        
+        self.update_contract_pay_date_choose.setCalendarPopup(True)
+        self.update_contract_pay_date_choose.setDisplayFormat("yyyy-MM-dd")
+        update_contract_pay_date_layout.addWidget(update_contract_pay_date_label)
+        update_contract_pay_date_layout.addWidget(self.update_contract_pay_date_choose)
+        update_contract_price_layout = QVBoxLayout()
+        update_contract_price_label = QLabel("price")
+        
+        update_contract_price_layout.addWidget(update_contract_price_label)
+        update_contract_price_layout.addWidget(self.update_contract_price_choose)
+
+        contract_line1 = QHBoxLayout()
+        contract_line1.addLayout(update_contract_number_layout)
+        contract_line1.addLayout(update_contract_company_layout)
+        contract_line1.addLayout(update_contract_client_layout)
+        contract_line2 = QHBoxLayout()
+        contract_line2.addLayout(update_contract_type_service_layout)
+        contract_line2.addLayout(update_contract_service_layout)
+        contract_line2.addLayout(update_contract_manager_layout)
+        contract_line3 = QHBoxLayout()
+        contract_line3.addLayout(update_contract_signing_date_layout)
+        contract_line3.addLayout(update_contract_start_date_layout)
+        contract_line3.addLayout(update_contract_end_date_layout)
+        contract_line4 = QHBoxLayout()
+        contract_line4.addLayout(update_contract_pay_date_layout)
+        contract_line4.addLayout(update_contract_price_layout)
+
+        update_contract_layout.addWidget(update_contract_label)
+        update_contract_layout.addLayout(contract_line1)
+        update_contract_layout.addLayout(contract_line2)
+        update_contract_layout.addLayout(contract_line3)
+        update_contract_layout.addLayout(contract_line4)
+        update_contract_layout.addWidget(self.update_contract_button)
+        update_contract_frame.setLayout(update_contract_layout)
+
+        line2.addWidget(update_type_service_frame)
+        line2.addWidget(update_service_frame)
+        line3.addWidget(update_manager_frame)
+
+
+        update_main_layout.addLayout(line1)
+        update_main_layout.addLayout(line2)
+        update_main_layout.addLayout(line3)
+
+        update_main_layout.addWidget(update_contract_frame)
+
+        self.update_data_window.setLayout(update_main_layout)
+        self.update_data_window.show()
+    def update_contract(self):
+        print(22)
+    def update_company_table(self):
+        new_company_name = self.update_company_edit.text()
+        prev_company_name = self.update_company_choose.currentText()
+        if self.update_company_edit != '':
+            try:
+                conn = sqlite3.connect('app_files\\EGA_database.db')
+                cursor = conn.cursor()
+                query = "UPDATE Company SET companyname = ? WHERE companyname = ?"
+                cursor.execute(query, (new_company_name, prev_company_name))
+
+                conn.commit()  # Сохранение изменений
+                conn.close()  # Закрытие соединения с базой данных
+                QMessageBox.information(self.sql_window, 'Success', 'Company updated successfully.')
+                self.update_company_edit.clear()
+                self.update_data_window.close()
+            except sqlite3.Error as e:
+                QMessageBox.warning(self.sql_window, 'Query execution error', f'Error: {str(e)}')
+
+    def on_client_changed(self, index):
+        selected_client = self.update_client_name_choose.currentText()
+        self.set_client_company(selected_client)
+    def on_service_changed(self, index):
+        selected_service = self.update_service_choose.currentText()
+        self.set_service_typeservice(selected_service)
+    def on_contract_changed(self, index):
+        selected_contract = int(self.update_contract_number_choose.currentText())
+        self.set_contract_value(selected_contract)
+
+    def set_contract_value(self, selected_contract):
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+
+            cursor.execute('''SELECT contractid, CompanyName, ClientName, TypeServiceName, ServiceName, SigningDate, StartDate, EndDate, PayDate, Price, ManagerName 
+FROM Contracts 
+join company using(companyid)
+join clients using(clientid)
+join typeservice using(typeserviceid)
+join service using(serviceid)
+join managers using(managerid) where contractid = ?''', (selected_contract,))
+            curent_contract = cursor.fetchall()
+            current_company = curent_contract[0][1]
+            current_client = curent_contract[0][2]
+            current_typeservice = curent_contract[0][3]
+            current_service = curent_contract[0][4]
+            current_signingdate = curent_contract[0][5]
+            curent_startdate = curent_contract[0][6]
+            current_enddate = curent_contract[0][7]
+            current_paydate = curent_contract[0][8]
+            current_price =  curent_contract[0][9]
+            current_manager =  curent_contract[0][10]
+
+            self.update_contract_company_choose.setCurrentText(current_company)
+            self.update_contract_client_choose.setCurrentText(current_client)
+            self.update_contract_type_service_choose.setCurrentText(current_typeservice)
+            self.update_contract_service_choose.setCurrentText(current_service)
+            self.update_contract_manager_choose.setCurrentText(current_manager)
+            self.update_contract_signing_date_choose.setDate(QDate.fromString(current_signingdate, "yyyy-MM-dd"))
+            self.update_contract_start_date_choose.setDate(QDate.fromString(curent_startdate, "yyyy-MM-dd"))
+            self.update_contract_end_date_choose.setDate(QDate.fromString(current_enddate, "yyyy-MM-dd"))
+            self.update_contract_pay_date_choose.setDate(QDate.fromString(current_paydate, "yyyy-MM-dd"))
+            # self.update_contract_price_choose.setText(str(current_price))
+
+
+            print(curent_contract)
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+    def set_client_company(self, selected_client):
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT companyname FROM Company join clients using(companyid) where clientname = ?", (selected_client,))
+            curent_company = cursor.fetchone()[0]
+            self.update_client_company_choose.setCurrentText(curent_company)
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+    def set_service_typeservice(self, selected_service):
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT typeservicename FROM typeservice join service using(typeserviceid) where servicename = ?", (selected_service,))
+            curent_typeservice = cursor.fetchone()[0]
+            self.update_service_type_service_choose.setCurrentText(curent_typeservice)
+            conn.close()
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
 
     def add_data_screen(self):
         self.add_data_window = QWidget()
@@ -999,25 +1496,25 @@ class LoginApp(QWidget):
 
         contract_start_date_layout = QVBoxLayout()
         contract_start_date_label = QLabel("Start date")
-        contract_start_date = QCalendarWidget()
-        contract_start_date.setGridVisible(False)
+        self.contract_start_date = QCalendarWidget()
+        self.contract_start_date.setGridVisible(False)
         contract_start_date_layout.addWidget(contract_start_date_label)
-        contract_start_date_layout.addWidget(contract_start_date)
+        contract_start_date_layout.addWidget(self.contract_start_date)
 
         contract_end_date_layout = QVBoxLayout()
         contract_end_date_label = QLabel("End date")
-        contract_end_date = QCalendarWidget()
-        contract_end_date.setGridVisible(False)
+        self.contract_end_date = QCalendarWidget()
+        self.contract_end_date.setGridVisible(False)
         contract_end_date_layout.addWidget(contract_end_date_label)
-        contract_end_date_layout.addWidget(contract_end_date)
+        contract_end_date_layout.addWidget(self.contract_end_date)
 
 
         contract_price_date_layout = QVBoxLayout()
         contract_price_date_label = QLabel("Pay date")
-        contract_price_date = QCalendarWidget()
-        contract_price_date.setGridVisible(False)
+        self.contract_price_date = QCalendarWidget()
+        self.contract_price_date.setGridVisible(False)
         contract_price_date_layout.addWidget(contract_price_date_label)
-        contract_price_date_layout.addWidget(contract_price_date)
+        contract_price_date_layout.addWidget(self.contract_price_date)
 
 
         
@@ -1030,9 +1527,9 @@ class LoginApp(QWidget):
         # contract_input_layout.addLayout(contract_service_layout)
         contract_input_layout.addLayout(contract_price_layout)
         contract_input_layout.addLayout(contract_signing_date_layout)
-        # contract_input_layout.addLayout(contract_start_date_layout)
-        # contract_input_layout.addLayout(contract_end_date_layout)
-        # contract_input_layout.addLayout(contract_price_date_layout)
+        contract_input_layout.addLayout(contract_start_date_layout)
+        contract_input_layout.addLayout(contract_end_date_layout)
+        contract_input_layout.addLayout(contract_price_date_layout)
 
         
         contract_layout.addWidget(contract_label)
@@ -1061,6 +1558,10 @@ class LoginApp(QWidget):
         manager_name = self.contract_manager_choose.currentText()
         price_sum = self.contract_price_input.text()
         signing_date_str = self.contract_signing_date.selectedDate().toString("yyyy-MM-dd")
+
+        start_date_str = self.contract_start_date.selectedDate().toString("yyyy-MM-dd")
+        end_date_str = self.contract_end_date.selectedDate().toString("yyyy-MM-dd")
+        pay_date_str = self.contract_price_date.selectedDate().toString("yyyy-MM-dd")
         # signing_date = datetime.strptime(signing_date_str, '%Y-%m-%d')
         
 
@@ -1088,9 +1589,9 @@ class LoginApp(QWidget):
             manager_id = cursor.fetchone()[0]
 
             cursor.execute('''
-                INSERT INTO Contracts (ContractID, CompanyID, ClientID, TypeServiceID, ServiceID, SigningDate, Price, ManagerID)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (new_contract_id, company_id, client_id, typeservice_id, service_id, signing_date_str, price_sum, manager_id))
+                INSERT INTO Contracts (ContractID, CompanyID, ClientID, TypeServiceID, ServiceID, SigningDate, StartDate, EndDate, PayDate, Price, ManagerID)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (new_contract_id, company_id, client_id, typeservice_id, service_id, signing_date_str, start_date_str, end_date_str, pay_date_str, price_sum, manager_id))
 
             conn.commit()
             QMessageBox.information(self.sql_window, 'Success', 'Contract added successfully.')
