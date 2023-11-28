@@ -509,6 +509,7 @@ class LoginApp(QWidget):
         update_client_layout = QVBoxLayout()
         update_client_label = QLabel('Client Table')
         update_client_button = QPushButton('Change')
+        update_client_button.clicked.connect(self.update_client_table)
         update_client_input_layout = QHBoxLayout()
 
         update_client_name_layout = QVBoxLayout()
@@ -550,27 +551,27 @@ class LoginApp(QWidget):
 
         update_client_new_name_layout = QVBoxLayout()
         update_client_new_name_label = QLabel('New cleint name')
-        update_client_new_name_input = QLineEdit()
+        self.update_client_new_name_input = QLineEdit()
         update_client_new_name_layout.addWidget(update_client_new_name_label)
-        update_client_new_name_layout.addWidget(update_client_new_name_input)
+        update_client_new_name_layout.addWidget(self.update_client_new_name_input)
 
         update_client_city_layout = QVBoxLayout()
         update_client_city_label = QLabel('City')
-        update_client_city = QLineEdit()
+        self.update_client_city = QLineEdit()
         update_client_city_layout.addWidget(update_client_city_label)
-        update_client_city_layout.addWidget(update_client_city)
+        update_client_city_layout.addWidget(self.update_client_city)
 
         update_client_address_layout = QVBoxLayout()
         update_client_adress_label = QLabel('Address')
-        update_client_address = QLineEdit()
+        self.update_client_address = QLineEdit()
         update_client_address_layout.addWidget(update_client_adress_label)
-        update_client_address_layout.addWidget(update_client_address)
+        update_client_address_layout.addWidget(self.update_client_address)
 
         update_client_phone_layout = QVBoxLayout()
         update_client_phone_label = QLabel('Phone')
-        update_client_phone = QLineEdit()
+        self.update_client_phone = QLineEdit()
         update_client_phone_layout.addWidget(update_client_phone_label)
-        update_client_phone_layout.addWidget(update_client_phone)
+        update_client_phone_layout.addWidget(self.update_client_phone)
 
         update_client_input_layout.addLayout(update_client_name_layout)
         update_client_input_layout.addLayout(update_client_company_layout) 
@@ -598,6 +599,7 @@ class LoginApp(QWidget):
         update_type_service_label = QLabel('Type service tabel')
         update_type_service_layout = QVBoxLayout()
         update_type_service_button = QPushButton('Change')
+        update_type_service_button.clicked.connect(self.update_type_service_table)
 
         update_type_service_input_layout = QHBoxLayout()
 
@@ -622,9 +624,9 @@ class LoginApp(QWidget):
         update_type_service_choose_layout.addWidget(self.update_type_service_choose)
         update_type_service_edit_layout = QVBoxLayout()
         update_type_service_edit_lable = QLabel('New name')
-        update_type_service_edit = QLineEdit()
+        self.update_type_service_edit = QLineEdit()
         update_type_service_edit_layout.addWidget(update_type_service_edit_lable)
-        update_type_service_edit_layout.addWidget(update_type_service_edit)
+        update_type_service_edit_layout.addWidget(self.update_type_service_edit)
         
         update_type_service_input_layout.addLayout(update_type_service_choose_layout)
         update_type_service_input_layout.addLayout(update_type_service_edit_layout)
@@ -638,6 +640,7 @@ class LoginApp(QWidget):
         update_service_label = QLabel("Service table")
         update_service_layout = QVBoxLayout()
         update_service_button = QPushButton("Change")
+        update_service_button.clicked.connect(self.update_service_table)
         update_service_input_layout = QHBoxLayout()
         update_service_type_service_choose_layout = QVBoxLayout()
         update_service_type_service_choose_label = QLabel("Type service")
@@ -669,9 +672,9 @@ class LoginApp(QWidget):
 
         update_service_edit_layout = QVBoxLayout()
         update_service_edit_label = QLabel("New name")
-        update_service_edit = QLineEdit()
+        self.update_service_edit = QLineEdit()
         update_service_edit_layout.addWidget(update_service_edit_label)
-        update_service_edit_layout.addWidget(update_service_edit)
+        update_service_edit_layout.addWidget(self.update_service_edit)
 
         update_service_input_layout.addLayout(update_service_choose_layout)
         update_service_input_layout.addLayout(update_service_type_service_choose_layout)
@@ -688,6 +691,7 @@ class LoginApp(QWidget):
         update_manager_layout = QVBoxLayout()
         update_manager_input_layout = QHBoxLayout()
         update_manager_button = QPushButton("Change")
+        update_manager_button.clicked.connect(self.update_manager_table)
         update_manager_choose_layout = QVBoxLayout()
         update_manager_choose_label = QLabel("Prev name")
         self.update_manager_choose = QComboBox()
@@ -708,14 +712,14 @@ class LoginApp(QWidget):
         update_manager_choose_layout.addWidget(self.update_manager_choose)
         update_manager_name_edit_layout = QVBoxLayout()
         update_manager_name_edit_label = QLabel("New name")
-        update_manager_name_edit = QLineEdit()
+        self.update_manager_name_edit = QLineEdit()
         update_manager_name_edit_layout.addWidget(update_manager_name_edit_label)
-        update_manager_name_edit_layout.addWidget(update_manager_name_edit)
+        update_manager_name_edit_layout.addWidget(self.update_manager_name_edit)
         update_manager_phone_edit_layout = QVBoxLayout()
         update_manager_phone_edit_label = QLabel("Phone")
-        update_manager_phone_edit = QLineEdit()
+        self.update_manager_phone_edit = QLineEdit()
         update_manager_phone_edit_layout.addWidget(update_manager_phone_edit_label)
-        update_manager_phone_edit_layout.addWidget(update_manager_phone_edit)
+        update_manager_phone_edit_layout.addWidget(self.update_manager_phone_edit)
 
         update_manager_input_layout.addLayout(update_manager_choose_layout)
         update_manager_input_layout.addLayout(update_manager_name_edit_layout)
@@ -846,6 +850,123 @@ class LoginApp(QWidget):
         self.update_data_window.show()
     def update_contract(self):
         print(22)
+
+    def update_manager_table(self):
+        prev_manager_name = self.update_manager_choose.currentText()
+        new_manager_name  = self.update_manager_name_edit.text()
+        manager_phone = self.update_manager_phone_edit.text()
+        if manager_phone != '' and new_manager_name != '':
+            try:
+                conn = sqlite3.connect('app_files\\EGA_database.db')
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM managers where managername = ?", (prev_manager_name,))
+                current_manager_info = cursor.fetchone()
+            except sqlite3.Error as e:
+                print(f"Error: {str(e)}")
+            if new_manager_name == '':
+                new_manager_name = prev_manager_name
+            if manager_phone == '':
+                manager_phone = current_manager_info[2]
+            try:
+                conn = sqlite3.connect('app_files\\EGA_database.db')
+                cursor = conn.cursor()
+                query = """UPDATE Managers SET managername = ?, managerphone = ? WHERE managername = ?"""
+                cursor.execute(query, (new_manager_name, manager_phone, prev_manager_name))
+                conn.commit()  # Сохранение изменений
+                conn.close()  # Закрытие соединения с базой данных
+                QMessageBox.information(self.update_data_window, 'Success', 'Manager updated successfully.')
+                self.update_manager_name_edit.clear()
+                self.update_manager_phone_edit.clear()
+            except sqlite3.Error as e:
+                QMessageBox.warning(self.update_data_window, 'Query execution error', f'Error: {str(e)}')
+
+        
+
+    def update_service_table(self):
+        prev_service_name = self.update_service_choose.currentText()
+        service_type_service_name = self.update_service_type_service_choose.currentText()
+        new_service_name = self.update_service_edit.text()
+        if new_service_name == '':
+            new_service_name = prev_service_name
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM typeservice where typeservicename = ?", (service_type_service_name,))
+            new_typeservice_id = cursor.fetchone()[0]
+            
+            query = """UPDATE service SET typeserviceid = ?, servicename = ? WHERE servicename = ?"""
+            cursor.execute(query, (new_typeservice_id, new_service_name, prev_service_name))
+
+            conn.commit()  # Сохранение изменений
+            conn.close()  # Закрытие соединения с базой данных
+            QMessageBox.information(self.update_data_window, 'Success', 'Service updated successfully.')
+            self.update_service_edit.clear()
+            # self.update_client_phone.close()
+        except sqlite3.Error as e:
+            QMessageBox.warning(self.update_data_window, 'Query execution error', f'Error: {str(e)}')
+
+        
+    def update_type_service_table(self):
+        prev_type_service_name = self.update_type_service_choose.currentText()
+        new_typeservice_name = self.update_type_service_edit.text()
+        if new_typeservice_name != '':
+            try:
+                conn = sqlite3.connect('app_files\\EGA_database.db')
+                cursor = conn.cursor()
+                query = "UPDATE typeservice SET typeservicename = ? WHERE typeservicename = ?"
+                cursor.execute(query, (new_typeservice_name, prev_type_service_name))
+                conn.commit()  # Сохранение изменений
+                conn.close()  # Закрытие соединения с базой данных
+                QMessageBox.information(self.update_data_window, 'Success', 'Type service updated successfully.')
+                self.update_type_service_edit.clear()
+            except sqlite3.Error as e:
+                QMessageBox.warning(self.update_data_window, 'Query execution error', f'Error: {str(e)}')
+
+
+    def update_client_table(self):
+        prev_client_name = self.update_client_name_choose.currentText()
+        client_company_name = self.update_client_company_choose.currentText()
+        client_new_name = self.update_client_new_name_input.text()
+        client_city = self.update_client_city.text()
+        client_address = self.update_client_address.text()
+        client_phone = self.update_client_phone.text()
+        try:
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM clients where clientname = ?", (prev_client_name,))
+            current_client_info = cursor.fetchone()
+
+            print(current_client_info)
+            
+        except sqlite3.Error as e:
+            print(f"Error: {str(e)}")
+        if client_new_name == '':
+            client_new_name = current_client_info[2]
+        if client_city == '':
+            client_city = current_client_info[3]
+        if client_address == '':
+            client_address = current_client_info[4]
+        if client_phone == '':
+            client_phone = current_client_info[5]
+        try:
+            cursor.execute("SELECT * FROM company where companyname = ?", (client_company_name,))
+            new_company_id = cursor.fetchone()[0]
+            conn = sqlite3.connect('app_files\\EGA_database.db')
+            cursor = conn.cursor()
+            query = """UPDATE Clients SET ClientName = ?, CompanyID = ?, City = ?, Address = ?, ClientPhone = ? WHERE ClientName = ?"""
+            cursor.execute(query, (client_new_name, new_company_id, client_city, client_address, client_phone, prev_client_name))
+
+            conn.commit()  # Сохранение изменений
+            conn.close()  # Закрытие соединения с базой данных
+            QMessageBox.information(self.update_data_window, 'Success', 'Client updated successfully.')
+            self.update_client_new_name_input.clear()
+            self.update_client_city.clear()
+            self.update_client_address.clear()
+            self.update_client_new_name_input.clear()
+            # self.update_client_phone.close()
+        except sqlite3.Error as e:
+            QMessageBox.warning(self.update_data_window, 'Query execution error', f'Error: {str(e)}')
+
     def update_company_table(self):
         new_company_name = self.update_company_edit.text()
         prev_company_name = self.update_company_choose.currentText()
@@ -858,11 +979,11 @@ class LoginApp(QWidget):
 
                 conn.commit()  # Сохранение изменений
                 conn.close()  # Закрытие соединения с базой данных
-                QMessageBox.information(self.sql_window, 'Success', 'Company updated successfully.')
+                QMessageBox.information(self.update_data_window, 'Success', 'Company updated successfully.')
                 self.update_company_edit.clear()
-                self.update_data_window.close()
+                # self.update_data_window.close()
             except sqlite3.Error as e:
-                QMessageBox.warning(self.sql_window, 'Query execution error', f'Error: {str(e)}')
+                QMessageBox.warning(self.update_data_window, 'Query execution error', f'Error: {str(e)}')
 
     def on_client_changed(self, index):
         selected_client = self.update_client_name_choose.currentText()
