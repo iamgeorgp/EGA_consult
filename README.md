@@ -2,7 +2,12 @@
 
 # EGA System Tool: A graphical information system for working with the database of a consulting company
 
+## Project Documents
 [RU README version](https://github.com/iamgeorgp/EGA_consult/blob/main/README_RU.md)
+
+[Terms of Reference](https://github.com/iamgeorgp/EGA_consult/blob/main/TermsofReference.md)
+
+[User Manual](https://github.com/iamgeorgp/EGA_consult/blob/main/UserManual.md)
 
 ## Description
 
