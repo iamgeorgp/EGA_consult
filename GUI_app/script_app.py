@@ -2584,12 +2584,13 @@ join managers using(managerid)''')
         if selected_action == "Average monthly amount of contracts for services of each type":
             self.sql_input.setPlainText("SELECT \n\tTypeServiceID, TypeServiceName, round(AVG(TotalPrice), 3) AS AvgMonthPrice\nFROM\n\t(SELECT \n\t\tstrftime('%Y-%m', SigningDate) AS YearMonth, TypeServiceID, SUM(Price) AS TotalPrice \n\tFROM Contracts \n\tGROUP BY YearMonth, TypeServiceID) AS Subquery\nJOIN TypeService USING(TypeServiceID)\nGROUP BY TypeServiceID;")
         if selected_action  == "Archive table and retain contracts no more than 3 years old":
-            self.sql_input.setPlainText("DELETE FROM Contracts WHERE SigningDate <= date('now', '-3 years');")
             conn = sqlite3.connect('app_files\\EGA_database.db')
             cursor = conn.cursor()
             # Check if manager with the same name already exists
             cursor.execute('CREATE TABLE IF NOT EXISTS ContractsArchive AS SELECT * FROM Contracts;')
             conn.commit()
+            self.sql_input.setPlainText("DELETE FROM Contracts WHERE SigningDate <= date('now', '-3 years') returning *;")
+           
             
         if selected_action == "Annual report on the amount received for services rendered":
             self.sql_input.setPlainText("SELECT servicename, SUM(Price) AS TotalRevenue\nFROM Contracts\nJOIN service on contracts.serviceid = service.serviceid\nwhere strftime('%Y', SigningDate) = strftime('%Y', 'now')\nGROUP BY servicename\nORDER BY servicename;")
@@ -2604,7 +2605,7 @@ join managers using(managerid)''')
         if selected_action == "List of individual service contracts":
             self.sql_input.setPlainText(f"SELECT \n\t*\nFROM Contracts\nJOIN Service USING(ServiceID)\nWHERE ServiceName ='{selected_word}';")
         if selected_action == "List of contracts grouped by type of service for the past year":
-            self.sql_input.setPlainText(f"SELECT \n\t*\nFROM Contracts\nJOIN Service USING(ServiceID)\nJOIN TypeService USING(TypeServiceID)\nWHERE TypeServiceName ='{selected_word}' AND strftime('%Y', SigningDate) = strftime('%Y', 'now');")
+            self.sql_input.setPlainText(f"SELECT \n\tContractID, company.CompanyID, companyName, clientid, clientname, city, address, clientphone, typeservice.typeserviceid, typeservicename, serviceid, servicename, signingdate, startdate, enddate, paydate, price, managerid, managername, managerphone\nFROM Contracts\nJOIN Service USING(ServiceID)\nJOIN Company USING(Companyid)\nJOIN Clients USING(ClientID)\nJOIN TypeService USING(TypeServiceID)\n\n JOIN managers using(managerid)\nWHERE TypeServiceName ='{selected_word}' AND strftime('%Y', SigningDate) = strftime('%Y', 'now');")
                 
 
 
@@ -2658,7 +2659,7 @@ join managers using(managerid)''')
             cursor = conn.cursor()
             cursor.execute(sql_script)
             rows = cursor.fetchall()
-            if sql_script == "DELETE FROM Contracts WHERE SigningDate <= date('now', '-3 years');":
+            if sql_script == "DELETE FROM Contracts WHERE SigningDate <= date('now', '-3 years') returning *;":
                 QMessageBox.information(self.sql_window, 'Success', 'A contract archive was successfully created and contracts executed more than 3 years ago were deleted.')
             # Display results as a table with column names
             if rows:
